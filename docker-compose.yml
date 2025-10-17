@@ -1,0 +1,8 @@
+﻿version: "3.9"
+services:
+  cli:
+    build: .
+    image: rust-fastly-logs-analyzer:local
+    environment:
+      - FASTLY_TOKEN=${FASTLY_TOKEN}
+    entrypoint: ["/usr/local/bin/rust-fastly-logs-analyzer"]
