@@ -1,5 +1,5 @@
 ﻿use anyhow::{anyhow, Result};
-use clap::{Parser, Subcommand};
+use clap::{Parser, Subcommand, ValueEnum};
 use chrono::{DateTime, Utc};
 use reqwest::Client;
 use serde_json::Value;
@@ -12,7 +12,12 @@ struct Cli {
     command: Commands,
     #[arg(long)]
     token: Option<String>,
+    #[arg(long, value_enum, default_value_t = Format::Text)]
+    format: Format,
 }
+
+#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
+enum Format { Text, Json }
 
 #[derive(Subcommand)]
 enum Commands {
@@ -26,8 +31,14 @@ async fn main() -> Result<()> {
     let token = cli.token.or_else(|| std::env::var("FASTLY_TOKEN").ok()).ok_or_else(|| anyhow!("token required via --token or FASTLY_TOKEN"))?;
     let client = Client::builder().build()?;
     match cli.command {
-        Commands::Stats { service, from, to, by, json } => stats(&client, &token, &service, from.as_deref(), to.as_deref(), &by, json).await?,
-        Commands::Summary { service, json } => summary(&client, &token, &service, json).await?,
+        Commands::Stats { service, from, to, by, json } => {
+            let jsonl = matches!(cli.format, Format::Json) || json;
+            stats(&client, &token, &service, from.as_deref(), to.as_deref(), &by, jsonl).await?
+        }
+        Commands::Summary { service, json } => {
+            let jsonl = matches!(cli.format, Format::Json) || json;
+            summary(&client, &token, &service, jsonl).await?
+        }
     }
     Ok(())
 }

@@ -1,6 +1,6 @@
 ﻿# rust-fastly-logs-analyzer
 
-Small CLI to query Fastly stats from the API. It’s handy for quick checks and for exporting NDJSON that can be piped elsewhere.
+Small CLI to query Fastly stats from the API. It's handy for quick checks and for exporting NDJSON that can be piped elsewhere. Use `--format json` for NDJSON (legacy `--json` also works).
 
 ## Steps
 - Install Rust (`rustup`)
@@ -10,10 +10,10 @@ Small CLI to query Fastly stats from the API. It’s handy for quick checks and 
 ## Local Usage
 ```
 # Minute stats for the last hour
-cargo run -- stats --service SERVICE_ID --from "2025-10-16T12:00:00Z" --to "2025-10-16T13:00:00Z" --by minute --json
+cargo run -- stats --service SERVICE_ID --from "2025-10-16T12:00:00Z" --to "2025-10-16T13:00:00Z" --by minute --format json
 
 # Summary
-cargo run -- summary --service SERVICE_ID --json
+cargo run -- summary --service SERVICE_ID --format json
 ```
 
 ## Docker
@@ -23,12 +23,12 @@ docker build -t rust-fastly-logs-analyzer .
 Run:
 ```
 docker run --rm -it -e FASTLY_TOKEN rust-fastly-logs-analyzer ^
-  stats --service SERVICE_ID --by minute --json
+  stats --service SERVICE_ID --by minute --format json
 ```
 
 ## Docker Compose
 ```
-docker compose run --rm cli stats --service SERVICE_ID --by minute --json
+docker compose run --rm cli stats --service SERVICE_ID --by minute --format json
 ```
 
 ## JSON Examples
